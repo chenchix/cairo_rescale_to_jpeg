@@ -15,7 +15,7 @@ cairo_surface_t * decodeJPEGIntoSurface(struct jpeg_decompress_struct *args, uin
 
   uint8_t *src = (uint8_t *) malloc(width * args->output_components);
   if (!src) {
-    //free(data);
+    free(data);
     jpeg_abort_decompress(args);
     jpeg_destroy_decompress(args);
     return NULL;
@@ -29,9 +29,7 @@ cairo_surface_t * decodeJPEGIntoSurface(struct jpeg_decompress_struct *args, uin
     uint32_t *row = (uint32_t *)(data + stride * y);
     for (x = 0; x < width; ++x) {
       if (args->jpeg_color_space == 1) {
-        
         uint32_t *pixel = row + x;
-
         *pixel = 255 << 24
           | src[x] << 16
           | src[x] << 8
@@ -39,7 +37,6 @@ cairo_surface_t * decodeJPEGIntoSurface(struct jpeg_decompress_struct *args, uin
       } else {
         int bx = 3 * x;
         uint32_t *pixel = row + x;
-
         *pixel = 255 << 24
           | src[bx + 0] << 16
           | src[bx + 1] << 8
@@ -95,19 +92,11 @@ void rescale(cairo_surface_t* surface, cairo_surface_t* surfacescaled, int width
   float w = cairo_image_surface_get_width (surface);
   float h = cairo_image_surface_get_height (surface);
 
-  float width_ratio = width / w;
-  float height_ratio = height / h;
-  float scale_xy = MIN(height_ratio, width_ratio);
-  //cairo_scale(cr, width_ratio, height_ratio);  
-
   int _x = width/2 - w/2;
   int _y = height/2 - h/2;
+
   cairo_translate( cr, _x, _y ) ;
-
-  printf("w %d h %d\n", _x, _y);
-
-  cairo_set_source_surface (cr, surface, 0, 0); //(width/2)-(w/2), (height/height_ratio)-(h/height_ratio));
- 
+  cairo_set_source_surface (cr, surface, 0, 0); 
   cairo_paint (cr);
   cairo_destroy(cr);
   return;
