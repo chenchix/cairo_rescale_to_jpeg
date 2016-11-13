@@ -1,6 +1,6 @@
 CFLAGS=$(shell pkg-config --cflags cairo libjpeg) -g
 LIBS=$(shell pkg-config --libs cairo libjpeg)
-TARGET=tool
+TARGET=rescale
 SOURCE=jpgtocairo.c
 
 
